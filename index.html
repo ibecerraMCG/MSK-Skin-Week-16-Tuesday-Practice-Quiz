@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 16 Tuesday Practice Quiz</title>
+    <style>
+        /* --- Color Variables --- */
+        :root {
+            /* Default: Dark Theme */
+            --bg-color: #2d343e;
+            /* Dark background */
+            --container-bg: #3c424f;
+            /* Slightly lighter container */
+            --text-color: #e8e6e3;
+            /* Light text */
+            --question-text-color: #8ab4f8;
+            /* Light blue for questions */
+            --lo-text-color: #b0c4de;
+            /* Lighter blue for learning objective */
+            --border-color: #555;
+            /* Darker borders */
+            --separator-color: #4a4f5a;
+            --label-bg: #454c5a;
+            --label-border: #6c757d;
+            --label-hover-bg: #525966;
+            --label-hover-border: #7a828a;
+            --button-bg: #8ab4f8;
+            --button-text: #202124;
+            --button-hover-bg: #a3c5f9;
+            --button-disabled-bg: #5f6368;
+            --feedback-correct-bg: #344e41;
+            --feedback-correct-text: #c7f9cc;
+            --feedback-correct-border: #52b788;
+            --feedback-incorrect-bg: #5e2129;
+            --feedback-incorrect-text: #f8d7da;
+            --feedback-incorrect-border: #a4133c;
+            --feedback-rationale-text: #adb5bd;
+            /* Lighter gray for rationale */
+            --feedback-source-text: #c7d3e0;
+            --feedback-separator: #6c757d;
+            --radio-accent: #8ab4f8;
+        }
+
+        .light-theme {
+            --bg-color: #eef2f7;
+            --container-bg: #ffffff;
+            --text-color: #343a40;
+            --question-text-color: #0056b3;
+            --lo-text-color: #5a6e8a;
+            --border-color: #dee2e6;
+            --separator-color: #e9ecef;
+            --label-bg: #f8f9fa;
+            --label-border: #ced4da;
+            --label-hover-bg: #e2e6ea;
+            --label-hover-border: #adb5bd;
+            --button-bg: #007bff;
+            --button-text: white;
+            --button-hover-bg: #0056b3;
+            --button-disabled-bg: #6c757d;
+            --feedback-correct-bg: #d1e7dd;
+            --feedback-correct-text: #0f5132;
+            --feedback-correct-border: #badbcc;
+            --feedback-incorrect-bg: #f8d7da;
+            --feedback-incorrect-text: #842029;
+            --feedback-incorrect-border: #f5c2c7;
+            --feedback-rationale-text: #495057;
+            --feedback-source-text: #343a40;
+            --feedback-separator: #ccc;
+            --radio-accent: #007bff;
+        }
+
+        /* --- General Styles --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.7;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 40px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #theme-toggle-button {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 12px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: 1px solid var(--label-border);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            z-index: 1000;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #theme-toggle-button:hover {
+            opacity: 0.8;
+        }
+
+        #quiz-container {
+            max-width: 900px;
+            margin: 80px auto 30px auto;
+            background: var(--container-bg);
+            padding: 25px 35px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .question-block {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--separator-color);
+            transition: border-color 0.3s;
+        }
+
+        .question-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 5px;
+        }
+
+        .learning-objective {
+            font-size: 0.85em;
+            font-style: italic;
+            color: var(--lo-text-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--separator-color);
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 18px;
+            color: var(--question-text-color);
+            transition: color 0.3s;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--label-border);
+            background-color: var(--label-bg);
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+
+        .options label:hover {
+            background-color: var(--label-hover-bg);
+            border-color: var(--label-hover-border);
+        }
+
+        .options input[type="radio"]:checked+span {
+            font-weight: bold;
+            color: var(--question-text-color);
+        }
+
+        .options input[type="radio"] {
+            margin-right: 12px;
+            accent-color: var(--radio-accent);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .check-button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+        }
+
+        .check-button:hover {
+            opacity: 0.85;
+        }
+
+        .check-button:disabled {
+            background-color: var(--button-disabled-bg);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 0.95em;
+            display: none;
+            border: 1px solid transparent;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        .feedback.correct {
+            background-color: var(--feedback-correct-bg);
+            color: var(--feedback-correct-text);
+            border-color: var(--feedback-correct-border);
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background-color: var(--feedback-incorrect-bg);
+            color: var(--feedback-incorrect-text);
+            border-color: var(--feedback-incorrect-border);
+            display: block;
+        }
+
+        .feedback-status {
+            font-weight: bold;
+            font-size: 1.1em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .feedback-rationale {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--feedback-separator);
+            font-size: 0.9em;
+            color: var(--feedback-rationale-text);
+            transition: color 0.3s, border-color 0.3s;
+        }
+
+        .feedback-source {
+            margin-top: 10px;
+            font-size: 0.85em;
+            font-style: italic;
+            color: var(--feedback-source-text);
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--question-text-color);
+            margin-top: 30px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle-button">Toggle Theme</button>
+    <h1>Week 16 Tuesday Practice Quiz</h1>
+    <div id="quiz-container">
+        <!-- Questions will be loaded here by JavaScript -->
+    </div>
+    <script>
+        const quizData = [
+            // Anterior and Medial Thigh
+            {
+                learningObjective: "LO 1 (Anterior and Medial Thigh): Identify and describe bony landmarks of the femur that are important for normal musculoskeletal function and that may be involved in bone fractures.",
+                question: "An 82-year-old woman with a history of severe osteoporosis falls in her bathroom. She presents to the emergency department with a shortened and externally rotated right leg, and she is in severe pain. An AP radiograph of the hip reveals a fracture running along the line connecting the greater and lesser trochanters on the posterior side. Which specific bony landmark has been fractured?",
+                options: {
+                    A: "Femoral neck",
+                    B: "Adductor tubercle",
+                    C: "Linea aspera",
+                    D: "Intertrochanteric crest"
+                },
+                correctAnswer: "D",
+                rationale: "The intertrochanteric crest is the prominent ridge of bone on the posterior aspect of the femur that connects the greater and lesser trochanters. A fracture in this location is known as an intertrochanteric fracture, which is common in elderly individuals with osteoporosis after a fall.",
+                source: "The anatomical chart labels the 'Intertrochanteric crest' on the posterior view of the femur, and the X-ray examples show an '(E) Intertrochanteric fracture' in this region. (Anterior and Medial Thigh, Slides 15, 16)"
+            },
+            {
+                learningObjective: "LO 1 (Anterior and Medial Thigh): Identify and describe bony landmarks of the femur that are important for normal musculoskeletal function and that may be involved in bone fractures.",
+                question: "A professional cyclist presents with chronic posterior thigh pain. A physical examination reveals tenderness along the longitudinal ridge on the back of the femoral shaft, which serves as an attachment site for several powerful adductor and extensor muscles. Which bony landmark is the source of the patient's discomfort?",
+                options: {
+                    A: "Lesser trochanter",
+                    B: "Linea aspera",
+                    C: "Medial epicondyle",
+                    D: "Adductor tubercle"
+                },
+                correctAnswer: "B",
+                rationale: "The linea aspera is the distinct, rough line on the posterior surface of the femoral shaft. It serves as a major attachment point for the adductors and parts of the hamstrings and quadriceps, making it a site susceptible to overuse injuries in athletes.",
+                source: "The diagram clearly labels the 'Linea aspera' on the posterior view of the femur shaft. (Anterior and Medial Thigh, Slide 15)"
+            },
+            {
+                learningObjective: "LO 1 (Anterior and Medial Thigh): Identify and describe bony landmarks of the femur that are important for normal musculoskeletal function and that may be involved in bone fractures.",
+                question: "A 25-year-old male is involved in a motor vehicle collision and sustains a comminuted fracture of the proximal femur. The orthopedic surgeon notes a small, avulsed bone fragment that is displaced medially. This fragment is the insertion point for the iliopsoas muscle. Which bony landmark has been fractured?",
+                options: {
+                    A: "Greater trochanter",
+                    B: "Femoral head",
+                    C: "Lesser trochanter",
+                    D: "Ischial tuberosity"
+                },
+                correctAnswer: "C",
+                rationale: "The lesser trochanter is the insertion site for the powerful iliopsoas muscle. In high-energy trauma, the forceful contraction of this muscle can cause an avulsion fracture, pulling the lesser trochanter away from the rest of the femur. An example of this is shown in the provided X-rays.",
+                source: "'(F) Comminuted intertrochanteric fracture of left proximal femur... arrowhead, separate lesser trochanter fragment.' (Anterior and Medial Thigh, Slide 16)"
+            },
+            {
+                learningObjective: "LO 2 (Anterior and Medial Thigh): Relate the muscles of the anterior and medial thigh to their roles in normal walking and running and predict clinical consequences of injury to these muscles.",
+                question: "A 45-year-old man is training for a marathon and develops anterior knee pain. His physician diagnoses him with quadriceps tendonitis. The patient is advised to rest, as forceful contraction of this muscle group could lead to a tendon rupture, resulting in an inability to perform which action?",
+                options: {
+                    A: "Flex the hip",
+                    B: "Extend the knee",
+                    C: "Adduct the leg",
+                    D: "Flex the knee"
+                },
+                correctAnswer: "B",
+                rationale: "The quadriceps femoris muscle group is the primary extensor of the knee. Its four heads converge into the quadriceps tendon. A rupture of this tendon would result in a significant loss of the ability to straighten the leg at the knee joint.",
+                source: "'Quadriceps Femoris... Main action: extension of the knee.' (Anterior and Medial Thigh, Slide 22)"
+            },
+            {
+                learningObjective: "LO 2 (Anterior and Medial Thigh): Relate the muscles of the anterior and medial thigh to their roles in normal walking and running and predict clinical consequences of injury to these muscles.",
+                question: "A professional dancer experiences a sudden, sharp pain in her inner thigh while performing a split. She has significant bruising and weakness when attempting to bring her legs together. An injury to the muscles of which compartment is the most likely diagnosis?",
+                options: {
+                    A: "Anterior compartment",
+                    B: "Posterior compartment",
+                    C: "Lateral compartment",
+                    D: "Medial compartment"
+                },
+                correctAnswer: "D",
+                rationale: "The muscles of the medial compartment of the thigh, including the adductor longus, brevis, and magnus, are primarily responsible for adducting the leg. A 'groin pull' or strain commonly involves these muscles.",
+                source: "'Medial thigh muscles • General actions: • Adduct the leg.' (Anterior and Medial Thigh, Slide 33)"
+            },
+            {
+                learningObjective: "LO 2 (Anterior and Medial Thigh): Relate the muscles of the anterior and medial thigh to their roles in normal walking and running and predict clinical consequences of injury to these muscles.",
+                question: "A patient is recovering from hip replacement surgery. During rehabilitation, he struggles to lift his leg forward and upward, a motion critical for initiating a step. Weakness in which muscle, the primary flexor of the hip, is most likely contributing to this difficulty?",
+                options: {
+                    A: "Sartorius",
+                    B: "Rectus femoris",
+                    C: "Iliopsoas",
+                    D: "Pectineus"
+                },
+                correctAnswer: "C",
+                rationale: "The iliopsoas is the most powerful flexor of the hip joint. Its function is essential for walking, running, and climbing stairs. Post-surgical weakness or injury to this muscle directly impairs the ability to flex the thigh.",
+                source: "'Iliopsoas... Main action: flexion of the hip.' (Anterior and Medial Thigh, Slide 28)"
+            },
+            {
+                learningObjective: "LO 3 (Anterior and Medial Thigh): Discuss the organization of deep fascia and fascial compartments in the thigh with particular emphasis on clinical conditions involving the femoral sheath, canal, and ring (e.g., catheterization of femoral vessels, femoral hernias, and lymphatic drainage).",
+                question: "A 65-year-old woman presents with a painful bulge in her upper medial thigh, just inferior to the inguinal ligament. The bulge is more prominent when she coughs. The surgeon diagnoses a femoral hernia, where abdominal contents have protruded through the femoral ring into which space?",
+                options: {
+                    A: "Femoral canal",
+                    B: "Adductor canal",
+                    C: "Obturator canal",
+                    D: "Femoral triangle"
+                },
+                correctAnswer: "A",
+                rationale: "A femoral hernia occurs when abdominal viscera are forced through the femoral ring, the proximal opening of the femoral canal. The femoral canal is the medialmost compartment of the femoral sheath and contains fatty tissue and lymphatics.",
+                source: "'Femoral hernia • Loop of abdominal viscera forced into the femoral canal.' (Anterior and Medial Thigh, Slide 44)"
+            },
+            {
+                learningObjective: "LO 3 (Anterior and Medial Thigh): Discuss the organization of deep fascia and fascial compartments in the thigh with particular emphasis on clinical conditions involving the femoral sheath, canal, and ring (e.g., catheterization of femoral vessels, femoral hernias, and lymphatic drainage).",
+                question: "A cardiologist is performing a cardiac catheterization via the femoral artery. To access the vessel, the needle must be inserted inferior to the inguinal ligament and into the lateral compartment of the femoral sheath. Which of the following structures is also contained within the femoral sheath but is not the target for arterial access?",
+                options: {
+                    A: "Femoral nerve",
+                    B: "Femoral vein",
+                    C: "Obturator artery",
+                    D: "Great saphenous vein"
+                },
+                correctAnswer: "B",
+                rationale: "The femoral sheath contains three compartments. From lateral to medial, they are: the lateral compartment (femoral artery), the intermediate compartment (femoral vein), and the medial compartment (femoral canal). The femoral nerve lies outside and lateral to the sheath.",
+                source: "'Three compartments: • Lateral compartment: femoral a. • Intermedial compartment: femoral v. • Medial compartment: femoral canal... Does not include the femoral nerve.' (Anterior and Medial Thigh, Slide 43)"
+            },
+            {
+                learningObjective: "LO 3 (Anterior and Medial Thigh): Discuss the organization of deep fascia and fascial compartments in the thigh with particular emphasis on clinical conditions involving the femoral sheath, canal, and ring (e.g., catheterization of femoral vessels, femoral hernias, and lymphatic drainage).",
+                question: "During a surgical repair of a femoral hernia, the surgeon must be careful to identify the structures forming the boundaries of the femoral triangle. Which muscle forms the medial boundary of this triangle?",
+                options: {
+                    A: "Sartorius",
+                    B: "Iliopsoas",
+                    C: "Pectineus",
+                    D: "Adductor longus"
+                },
+                correctAnswer: "D",
+                rationale: "The femoral triangle is a key anatomical space in the upper thigh. Its boundaries are the inguinal ligament (superior), the sartorius muscle (lateral), and the adductor longus muscle (medial).",
+                source: "'Femoral triangle • Boundaries: • Superior: inguinal ligament • Medial: adductor longus • Lateral: sartorius.' (Anterior and Medial Thigh, Slide 42)"
+            },
+            {
+                learningObjective: "LO 4 (Anterior and Medial Thigh): Examine the arterial supply to the anterior and medial thigh. Describe the pattern of venous drainage in the thigh, recognizing the potential for varicose veins.",
+                question: "A 21-year-old football player suffers a posterior dislocation of the hip. Following reduction, the physician is concerned about the risk of avascular necrosis of the femoral head. This complication is most often due to disruption of which artery, the primary blood supply to the femoral head?",
+                options: {
+                    A: "Obturator artery",
+                    B: "Deep femoral artery",
+                    C: "Medial circumflex femoral artery",
+                    D: "Lateral circumflex femoral artery"
+                },
+                correctAnswer: "C",
+                rationale: "The medial circumflex femoral artery provides the main blood supply to the head of the femur. In cases of femoral neck fracture or posterior hip dislocation, this vessel is vulnerable to injury, which can lead to avascular necrosis (bone death due to lack of blood supply).",
+                source: "'Avascular Necrosis of the Femoral Head • Damage to the medial circumflex femoral artery • Dislocation of the femoral head can damage the artery.' (Anterior and Medial Thigh, Slide 55)"
+            },
+            {
+                learningObjective: "LO 4 (Anterior and Medial Thigh): Examine the arterial supply to the anterior and medial thigh. Describe the pattern of venous drainage in the thigh, recognizing the potential for varicose veins.",
+                question: "A 55-year-old cashier who stands for long hours presents with bulging, tortuous veins on the medial aspect of her leg and thigh. She is diagnosed with varicose veins due to incompetent valves. These visible veins are part of which superficial venous structure?",
+                options: {
+                    A: "Femoral vein",
+                    B: "Deep femoral vein",
+                    C: "Popliteal vein",
+                    D: "Great saphenous vein"
+                },
+                correctAnswer: "D",
+                rationale: "The great saphenous vein is the major superficial vein of the lower limb, beginning in the foot and traveling up the entire medial aspect of the leg and thigh before draining into the femoral vein. Failure of its valves leads to blood pooling and the formation of varicose veins.",
+                source: "'Superficial Venous Drainage • Great saphenous vein: begins in the foot and travels up the entirety of the leg → drain into the femoral v. → external iliac v.' (Anterior and Medial Thigh, Slide 56)"
+            },
+            {
+                learningObjective: "LO 4 (Anterior and Medial Thigh): Examine the arterial supply to the anterior and medial thigh. Describe the pattern of venous drainage in the thigh, recognizing the potential for varicose veins.",
+                question: "An interventional radiologist is planning an angiogram of the lower limb. The catheter will be introduced into the femoral artery and advanced distally. After passing through the femoral triangle, the femoral artery travels through which anatomical passage before exiting at the adductor hiatus?",
+                options: {
+                    A: "Adductor canal",
+                    B: "Femoral canal",
+                    C: "Popliteal fossa",
+                    D: "Obturator foramen"
+                },
+                correctAnswer: "A",
+                rationale: "The adductor canal is an intermuscular passage that begins at the inferior angle of the femoral triangle and ends at the adductor hiatus. It serves as a conduit for the femoral artery and vein to travel from the anterior thigh to the posterior aspect of the knee.",
+                source: "'Adductor Canal • Intermuscular passage for the femoral artery and vein • Begins at the inferior angle of the femoral triangle → adductor hiatus.' (Anterior and Medial Thigh, Slide 45)"
+            },
+            {
+                learningObjective: "LO 5 (Anterior and Medial Thigh): Identify anatomical structures associated with the anterior and medial thigh on X-Rays, MRI, and CT scans.",
+                question: "A radiologist is examining an AP radiograph of a healthy adult hip. A large, cup-shaped socket on the lateral aspect of the pelvis is identified, which articulates with the head of the femur. What is this structure?",
+                options: {
+                    A: "Obturator foramen",
+                    B: "Iliac fossa",
+                    C: "Acetabulum",
+                    D: "Ischial spine"
+                },
+                correctAnswer: "C",
+                rationale: "The acetabulum is the socket of the hip joint, formed by the fusion of the ilium, ischium, and pubis. It is clearly visible on an AP radiograph of the hip as the structure that articulates with the femoral head.",
+                source: "The AP radiograph labels the 'Acetabulum' articulating with the 'Femoral head'. (Anterior and Medial Thigh, Slide 59)"
+            },
+            {
+                learningObjective: "LO 5 (Anterior and Medial Thigh): Identify anatomical structures associated with the anterior and medial thigh on X-Rays, MRI, and CT scans.",
+                question: "On an AP radiograph of the knee, a physician notes a fracture of the most distal and medial bony prominence of the femur, located just superior to the medial condyle. Which structure is fractured?",
+                options: {
+                    A: "Medial femoral condyle",
+                    B: "Patella",
+                    C: "Adductor tubercle",
+                    D: "Medial epicondyle"
+                },
+                correctAnswer: "D",
+                rationale: "While not explicitly labeled on the provided knee X-ray, the medial epicondyle is the bony prominence on the medial side of the distal femur, superior to the articular surface of the condyle. The adductor tubercle is a smaller point on the epicondyle. The condyle itself is the main articular surface.",
+                source: "The general anatomy diagram shows the 'Medial epicondyle' in this location on the distal femur. (Anterior and Medial Thigh, Slide 15)"
+            },
+            {
+                learningObjective: "LO 5 (Anterior and Medial Thigh): Identify anatomical structures associated with the anterior and medial thigh on X-Rays, MRI, and CT scans.",
+                question: "An AP radiograph of the pelvis is ordered for a patient after a traumatic injury. The physician identifies the large, oval-shaped opening in the hip bone, which is bounded by the pubis and ischium. What is this landmark?",
+                options: {
+                    A: "Acetabulum",
+                    B: "Obturator foramen",
+                    C: "Sacroiliac joint",
+                    D: "Greater sciatic notch"
+                },
+                correctAnswer: "B",
+                rationale: "The obturator foramen is the large opening created by the ischium and pubis bones of the pelvis. It is easily identifiable on an AP radiograph of the hip.",
+                source: "The AP radiograph clearly labels the 'Obturator foramen'. (Anterior and Medial Thigh, Slide 60)"
+            },
+            // Muscle Structure and Function
+            {
+                learningObjective: "LO 1 (Muscle Structure and Function): Describe the basic structure of thin and thick filaments that comprise the muscle contractile apparatus. (Skeletal versus Smooth muscle)",
+                question: "An electron micrograph of a skeletal muscle sarcomere is examined. The dark band, which remains constant in length during contraction, is observed. This band is composed primarily of which filaments?",
+                options: {
+                    A: "Actin only",
+                    B: "Myosin only",
+                    C: "Both actin and myosin",
+                    D: "Titin only"
+                },
+                correctAnswer: "C",
+                rationale: "The A band, or dark band, is the region of the sarcomere occupied by the thick (myosin) filaments. The outer edges of the A band also include the overlapping portions of the thin (actin) filaments. This entire region's length does not change during muscle contraction.",
+                source: "'• A band or dark band, the region occupied by thick (myosin) filaments (and varying overlap with thin filaments).' (Muscle Structure and Function, Slide 13)"
+            },
+            {
+                learningObjective: "LO 1 (Muscle Structure and Function): Describe the basic structure of thin and thick filaments that comprise the muscle contractile apparatus. (Skeletal versus Smooth muscle)",
+                question: "A histology slide of smooth muscle is compared to one of skeletal muscle. The smooth muscle lacks the characteristic striated appearance of skeletal muscle. This difference is due to which factor?",
+                options: {
+                    A: "Smooth muscle lacks myosin filaments.",
+                    B: "Smooth muscle actin and myosin are not arranged in sarcomeres.",
+                    C: "Smooth muscle uses a different mechanism for contraction.",
+                    D: "Smooth muscle lacks Z-disks."
+                },
+                correctAnswer: "B",
+                rationale: "Both muscle types use actin and myosin for contraction. However, the striated appearance of skeletal and cardiac muscle is due to the highly organized, repeating arrangement of these filaments into units called sarcomeres. Smooth muscle filaments are arranged more randomly, so they do not appear striated.",
+                source: "'Smooth muscle differs from striated muscle in that the actin filaments are arranged more randomly toward one another. This disorganized appearance means that smooth muscle lacks any visible striations.' (Muscle Structure and Function, Slide 48)"
+            },
+            {
+                learningObjective: "LO 1 (Muscle Structure and Function): Describe the basic structure of thin and thick filaments that comprise the muscle contractile apparatus. (Skeletal versus Smooth muscle)",
+                question: "A researcher is studying the molecular basis of muscle contraction. She identifies a massive protein that acts as a molecular spring, anchoring the thick myosin filaments to the Z-disk and contributing to the passive elasticity of muscle. What is this protein?",
+                options: {
+                    A: "Actin",
+                    B: "Tropomyosin",
+                    C: "Titin",
+                    D: "Dystrophin"
+                },
+                correctAnswer: "C",
+                rationale: "Titin is the largest known protein and plays a crucial role in sarcomere structure and function. It connects the M-line to the Z-disk, providing structural stability, and its elasticity is key to preventing the muscle from being overstretched.",
+                source: "'Titin, the largest protein in the body, is a molecular spring that keeps myosin molecules in place.' (Muscle Structure and Function, Slide 15)"
+            },
+            {
+                learningObjective: "LO 2 (Muscle Structure and Function): Describe the structure, location, and function of muscle receptors, including muscle spindles, Golgi tendon organs, and free nerve endings.",
+                question: "A patient's patellar tendon is tapped with a reflex hammer, causing the quadriceps muscle to stretch. This stretch activates a sensory receptor located within the muscle belly, which in turn triggers a reflex contraction. What is this receptor?",
+                options: {
+                    A: "Golgi tendon organ",
+                    B: "Free nerve ending",
+                    C: "Muscle spindle",
+                    D: "Pacinian corpuscle"
+                },
+                correctAnswer: "C",
+                rationale: "Muscle spindles are sensory receptors located within the muscle belly (in the perimysium) that run parallel to the main muscle fibers. They are sensitive to changes in muscle length and the rate of that change, and their activation triggers a reflex contraction (the stretch reflex).",
+                source: "'Muscle spindles are specialized fibers within the muscle belly... and serve to recognize the length and rate of change in a muscle and trigger a muscle contraction.' (Muscle Structure and Function, Slide 29)"
+            },
+            {
+                learningObjective: "LO 2 (Muscle Structure and Function): Describe the structure, location, and function of muscle receptors, including muscle spindles, Golgi tendon organs, and free nerve endings.",
+                question: "A weightlifter is attempting to lift a weight that is too heavy, creating excessive tension in the biceps muscle. A sensory receptor located at the junction of the muscle and its tendon is activated, causing an inhibitory signal to be sent to the muscle, leading to relaxation and preventing injury. What is this receptor?",
+                options: {
+                    A: "Muscle spindle",
+                    B: "Golgi tendon organ",
+                    C: "Free nerve ending",
+                    D: "Ruffini ending"
+                },
+                correctAnswer: "B",
+                rationale: "Golgi tendon organs (GTOs) are sensory receptors located in the tendon that sense changes in muscle tension or force. When tension becomes excessive, the GTO triggers a reflex that inhibits the muscle's contraction, causing it to relax and protect it from tearing.",
+                source: "'Golgi tendon organs sense excessive tension in the muscles and trigger a relaxation response.' (Muscle Structure and Function, Slide 28)"
+            },
+            {
+                learningObjective: "LO 2 (Muscle Structure and Function): Describe the structure, location, and function of muscle receptors, including muscle spindles, Golgi tendon organs, and free nerve endings.",
+                question: "During intense exercise, a runner develops a deep, burning pain in his calf muscles. This sensation is not related to muscle stretch or tension but rather to metabolic changes and potential micro-damage. Which sensory receptor is responsible for detecting this type of noxious stimulus?",
+                options: {
+                    A: "Golgi tendon organ",
+                    B: "Muscle spindle",
+                    C: "Free nerve endings",
+                    D: "Meissner's corpuscles"
+                },
+                correctAnswer: "C",
+                rationale: "Free nerve endings in the muscle act as sensory receptors for various stimuli, including temperature, mechanical stress, and noxious chemical signals associated with danger or damage (nociception), which are perceived as pain.",
+                source: "'ALSO: Free nerve endings are present in muscle and are sensory receptors. • Free nerve endings detect temperature, mechanical stimuli, and danger...' (Muscle Structure and Function, Slide 31)"
+            },
+            {
+                learningObjective: "LO 3 (Muscle Structure and Function): Explain the molecular mechanism of muscle contraction (sliding filament model of contraction and cross bridge cycle).",
+                question: "During the cross-bridge cycle of muscle contraction, the myosin head, having already bound to actin, pivots and pulls the thin filament toward the center of the sarcomere. This 'power stroke' is immediately preceded by which event?",
+                options: {
+                    A: "Binding of a new ATP molecule to the myosin head",
+                    B: "Release of ADP and inorganic phosphate (Pi) from the myosin head",
+                    C: "Hydrolysis of ATP into ADP and Pi",
+                    D: "Binding of Ca2+ to the myosin head"
+                },
+                correctAnswer: "B",
+                rationale: "The myosin head binds to actin while it still has ADP and Pi attached from the previous cycle's ATP hydrolysis. The release of these molecules triggers the conformational change in the myosin head, causing the power stroke that pulls the actin filament.",
+                source: "'The head of a myosin molecule binds to actin. There is ADP still on the myosin from a previous cycle, and this ADP is now released, resulting in... Myosin heads flex in tandem, pulling the actin strand...' (Muscle Structure and Function, Slide 51)"
+            },
+            {
+                learningObjective: "LO 3 (Muscle Structure and Function): Explain the molecular mechanism of muscle contraction (sliding filament model of contraction and cross bridge cycle).",
+                question: "For a muscle to relax after a contraction, the cross-bridges between actin and myosin must be broken. Which event is directly responsible for the detachment of the myosin head from the actin filament?",
+                options: {
+                    A: "Pumping of Ca2+ back into the sarcoplasmic reticulum",
+                    B: "Binding of a new ATP molecule to the myosin head",
+                    C: "Release of ADP from the myosin head",
+                    D: "Re-covering of the actin binding site by tropomyosin"
+                },
+                correctAnswer: "B",
+                rationale: "The bond between the myosin head and the actin filament is very strong after the power stroke. The binding of a new molecule of ATP to the myosin head is required to decrease its affinity for actin, causing it to detach and allowing the cycle to either repeat or for the muscle to relax.",
+                source: "'The conformation change in myosin exposes a site where ATP can bind. If ATP is present it binds on the flexed myosin. Binding causes release of myosin from actin.' (Muscle Structure and Function, Slide 51)"
+            },
+            {
+                learningObjective: "LO 3 (Muscle Structure and Function): Explain the molecular mechanism of muscle contraction (sliding filament model of contraction and cross bridge cycle).",
+                question: "In a state of rigor mortis, muscles become stiff and unable to relax. This physiological state is a direct result of the depletion of which molecule that is essential for the cross-bridge cycle?",
+                options: {
+                    A: "Acetylcholine",
+                    B: "Calcium (Ca2+)",
+                    C: "Adenosine triphosphate (ATP)",
+                    D: "Sodium (Na+)"
+                },
+                correctAnswer: "C",
+                rationale: "Rigor mortis occurs after death when cellular metabolism ceases and ATP is no longer produced. Without ATP, the myosin heads cannot detach from the actin filaments, leaving the muscles locked in a contracted state.",
+                source: "'If ATP is present it binds on the flexed myosin. Binding causes release of myosin from actin.' (Muscle Structure and Function, Slide 51) This implies that without ATP, release cannot occur."
+            },
+            {
+                learningObjective: "LO 4 (Muscle Structure and Function): Explain the molecular and cellular processes for initiation of contraction, transmission at the neuromuscular junction and activation of muscle contraction.",
+                question: "A nerve impulse arrives at the axon terminal of a motor neuron. The influx of which ion into the presynaptic terminal is the direct trigger for the release of acetylcholine (ACh) into the synaptic cleft?",
+                options: {
+                    A: "Sodium (Na+)",
+                    B: "Potassium (K+)",
+                    C: "Calcium (Ca2+)",
+                    D: "Chloride (Cl-)"
+                },
+                correctAnswer: "C",
+                rationale: "The arrival of an action potential at the axon terminal depolarizes the membrane, opening voltage-gated calcium channels. The subsequent influx of Ca2+ triggers the fusion of synaptic vesicles containing ACh with the presynaptic membrane, releasing the neurotransmitter into the synaptic cleft.",
+                source: "The diagram shows the action potential leading to Ca2+ release, which 'triggers contraction in response to CNS signal.' While this is from a different slide, the NMJ diagram on slide 20 confirms this process. 'Results from Action potential... leads to acetylcholine release from the axon terminal at the neuromuscular junction.' (Muscle Structure and Function, Slide 20)"
+            },
+            {
+                learningObjective: "LO 4 (Muscle Structure and Function): Explain the molecular and cellular processes for initiation of contraction, transmission at the neuromuscular junction and activation of muscle contraction.",
+                question: "After acetylcholine is released into the synaptic cleft, it binds to its receptors on the motor end plate of the muscle fiber. This binding directly causes the opening of what type of ion channel?",
+                options: {
+                    A: "Voltage-gated Na+ channel",
+                    B: "Voltage-gated Ca2+ channel",
+                    C: "Ligand-gated cation channel",
+                    D: "Mechanically-gated K+ channel"
+                },
+                correctAnswer: "C",
+                rationale: "The acetylcholine receptor at the neuromuscular junction is a ligand-gated ion channel. When two molecules of ACh (the ligand) bind to it, the channel opens, allowing the influx of positive ions (primarily Na+), which depolarizes the motor end plate and generates an end-plate potential.",
+                source: "'Acetylcholine released from the axon terminal binds to receptors on the sarcolemma.' (Muscle Structure and Function, Slide 20)"
+            },
+            {
+                learningObjective: "LO 4 (Muscle Structure and Function): Explain the molecular and cellular processes for initiation of contraction, transmission at the neuromuscular junction and activation of muscle contraction.",
+                question: "An action potential propagates along the sarcolemma and down the T-tubules of a skeletal muscle fiber. This electrical signal is then translated into the release of calcium from the sarcoplasmic reticulum. This process, known as excitation-contraction coupling, is a key step in initiating muscle contraction. What is the final step in this process that leads to muscle contraction?",
+                options: {
+                    A: "Calcium binding to tropomyosin",
+                    B: "Calcium binding to troponin",
+                    C: "Calcium binding to myosin",
+                    D: "Calcium binding to actin"
+                },
+                correctAnswer: "B",
+                rationale: "In skeletal muscle, the release of calcium from the sarcoplasmic reticulum is the critical link between electrical excitation and mechanical contraction. Calcium ions bind to troponin C, causing a conformational change that pulls tropomyosin away from the myosin-binding sites on the actin filament, allowing cross-bridge formation to begin.",
+                source: "'When calcium is released from the sarcoplasmic reticulum (SR), it binds to troponin C... This binding causes a conformational change in troponin, which shifts tropomyosin away from the myosin-binding sites on actin.' (Muscle Structure and Function, Slide 19)"
+            },
+            {
+                learningObjective: "LO 5 (Muscle Structure and Function): Describe the structure of the neuromuscular junction (NMJ) and understand the cellular and molecular basis for signaling abnormalities at the NMJ.",
+                question: "A 30-year-old woman presents with drooping eyelids (ptosis), double vision, and weakness that worsens throughout the day. She is diagnosed with myasthenia gravis. This autoimmune condition is caused by antibodies that block or destroy which component of the neuromuscular junction?",
+                options: {
+                    A: "Presynaptic voltage-gated Ca2+ channels",
+                    B: "Acetylcholine receptors on the motor end plate",
+                    C: "Acetylcholinesterase in the synaptic cleft",
+                    D: "Synaptic vesicles containing acetylcholine"
+                },
+                correctAnswer: "B",
+                rationale: "Myasthenia gravis is the classic disease of the neuromuscular junction, characterized by an autoimmune attack on the postsynaptic acetylcholine receptors. This reduces the number of functional receptors, impairing neuromuscular transmission and causing fluctuating muscle weakness.",
+                source: "'Myasthenia Gravis (MG)... Receptors blocked by antibody.' (Muscle Structure and Function, Slide 22)"
+            },
+            {
+                learningObjective: "LO 5 (Muscle Structure and Function): Describe the structure of the neuromuscular junction (NMJ) and understand the cellular and molecular basis for signaling abnormalities at the NMJ.",
+                question: "A patient receives an injection of botulinum toxin (BoTox) for cosmetic purposes. This toxin produces localized muscle paralysis by preventing the release of acetylcholine from the presynaptic terminal. It achieves this effect by cleaving which group of essential proteins?",
+                options: {
+                    A: "Acetylcholine receptors",
+                    B: "Voltage-gated sodium channels",
+                    C: "SNARE proteins",
+                    D: "Dystrophin proteins"
+                },
+                correctAnswer: "C",
+                rationale: "Botulinum toxin acts as a protease that specifically cleaves SNARE proteins (such as VAMP, SNAP-25, and syntaxin). These proteins are essential for the fusion of synaptic vesicles with the presynaptic membrane, so their destruction prevents the release of acetylcholine.",
+                source: "'Botulinum toxin LC cleaves SNARE proteins and prevents acetylcholine release.' (Muscle Structure and Function, Slide 23)"
+            },
+            {
+                learningObjective: "LO 5 (Muscle Structure and Function): Describe the structure of the neuromuscular junction (NMJ) and understand the cellular and molecular basis for signaling abnormalities at the NMJ.",
+                question: "The brief duration of the signal at the neuromuscular junction is critical for precise muscle control. This is ensured by the rapid degradation of acetylcholine in the synaptic cleft. Which enzyme is responsible for this action?",
+                options: {
+                    A: "Myosin kinase",
+                    B: "Creatine kinase",
+                    C: "Acetylcholinesterase",
+                    D: "Monoamine oxidase"
+                },
+                correctAnswer: "C",
+                rationale: "Acetylcholinesterase is an enzyme located in the synaptic cleft that rapidly breaks down acetylcholine into acetate and choline. This terminates the signal, allowing the muscle fiber to repolarize and prepare for the next impulse.",
+                source: "'The enzyme acetylcholinesterase located in the synaptic cleft rapidly breaks down acetylcholine, thereby preventing continued depolarization of the muscle fiber (tetany).' (Muscle Structure and Function, Slide 48)"
+            },
+            {
+                learningObjective: "LO 6 (Muscle Structure and Function): Describe the function of ‘ancillary’ proteins involved in muscular dystrophies.",
+                question: "A 5-year-old boy presents with progressive muscle weakness, difficulty climbing stairs, and enlarged calf muscles. A muscle biopsy shows an absence of a critical protein that links the intracellular actin cytoskeleton to the sarcolemma and the extracellular matrix. A mutation in the gene for which protein is the cause of this condition (Duchenne muscular dystrophy)?",
+                options: {
+                    A: "Titin",
+                    B: "Myosin",
+                    C: "Dystrophin",
+                    D: "Tropomyosin"
+                },
+                correctAnswer: "C",
+                rationale: "Dystrophin is a crucial ancillary protein that forms a key part of the dystrophin-glycoprotein complex. It connects the internal cytoskeleton to the sarcolemma, providing structural stability. Its absence, as seen in Duchenne muscular dystrophy, leads to fragile sarcolemma that tears easily during contraction, causing muscle fiber necrosis.",
+                source: "'Mutations in any of the proteins in this complex, result in fragile myofiber plasma membranes... most commonly involve mutations in dystrophin (Duchenne muscular dystrophy).' (Muscle Structure and Function, Slide 32)"
+            },
+            {
+                learningObjective: "LO 6 (Muscle Structure and Function): Describe the function of ‘ancillary’ proteins involved in muscular dystrophies.",
+                question: "The dystrophin-glycoprotein complex (DGC) is essential for maintaining the integrity of the muscle cell membrane during contraction. The DGC transfers the force of contraction from the internal cytoskeleton to which external structure?",
+                options: {
+                    A: "The T-tubule system",
+                    B: "The sarcoplasmic reticulum",
+                    C: "The extracellular matrix",
+                    D: "The adjacent muscle fiber"
+                },
+                correctAnswer: "C",
+                rationale: "The DGC acts as a mechanical link, transferring the force generated by the actin-myosin interaction through the sarcolemma to the surrounding extracellular matrix (via laminin). This strengthens the membrane and helps distribute the forces of contraction.",
+                source: "'The Dystrophin Glycoprotein Complex strengthens the plasma membrane (sarcolemma): Transfers tension to the extracellular matrix via laminin.' (Muscle Structure and Function, Slide 32)"
+            },
+            {
+                learningObjective: "LO 6 (Muscle Structure and Function): Describe the function of ‘ancillary’ proteins involved in muscular dystrophies.",
+                question: "A muscle biopsy from a patient with Duchenne muscular dystrophy shows muscle fiber necrosis, fibrosis, and centrally placed nuclei in regenerative fibers. The weakness is due to the replacement of functional muscle with what types of tissue?",
+                options: {
+                    A: "Cartilage and bone",
+                    B: "Adipose and fibrotic tissue",
+                    C: "Nervous and epithelial tissue",
+                    D: "Smooth muscle and cardiac muscle"
+                },
+                correctAnswer: "B",
+                rationale: "In DMD, the progressive loss of muscle fibers due to necrosis triggers a repair process that is overwhelmed. The lost muscle is replaced by non-contractile fat (adipose) and scar tissue (fibrosis), leading to 'pseudohypertrophy' (e.g., enlarged calves) and severe weakness.",
+                source: "'...enlargement of certain muscle groups despite muscle weakness due to replacement of muscle with fat and fibrotic tissue.' (Muscle Structure and Function, Slide 34)"
+            },
+            {
+                learningObjective: "LO 7 (Muscle Structure and Function): Explain the role of stem cells in muscle regeneration, hyptertrophy, and atrophy.",
+                question: "Following a strenuous weightlifting session, a bodybuilder's muscles undergo repair and growth. This process of hypertrophy is facilitated by a resident population of stem cells that proliferate and fuse with existing muscle fibers to increase their size and add new nuclei. What are these cells called?",
+                options: {
+                    A: "Fibroblasts",
+                    B: "Myoblasts",
+                    C: "Satellite cells",
+                    D: "Adipocytes"
+                },
+                correctAnswer: "C",
+                rationale: "Satellite cells are the resident stem cells of skeletal muscle. When activated by injury or exercise, they proliferate, and their daughter cells (myoblasts) can fuse with existing muscle fibers to repair damage and contribute to hypertrophy.",
+                source: "'Skeletal muscle contains a resident population of stem cells termed satellite cells. These cells proliferate and fuse to form new or bigger skeletal muscle fibers.' (Muscle Structure and Function, Slide 36)"
+            },
+            {
+                learningObjective: "LO 7 (Muscle Structure and Function): Explain the role of stem cells in muscle regeneration, hyptertrophy, and atrophy.",
+                question: "An 80-year-old man has experienced significant age-related muscle loss and weakness, a condition known as sarcopenia. Histological analysis of his muscle tissue would most likely show a marked decrease in the size and number of which type of muscle fiber?",
+                options: {
+                    A: "Type I (slow-twitch) fibers",
+                    B: "Type II (fast-twitch) fibers",
+                    C: "Cardiac muscle fibers",
+                    D: "Smooth muscle fibers"
+                },
+                correctAnswer: "B",
+                rationale: "Sarcopenia, or age-related muscle atrophy, disproportionately affects Type II (fast-twitch) muscle fibers. These fibers are responsible for powerful, rapid movements, and their loss contributes significantly to the decline in strength and speed seen in aging.",
+                source: "'Atrophy of Type II (fast) Muscle Fibers with Aging (Sarcopenia) Note: the diameter (also the number) of Type II muscle cells (fibers) decreases with aging.' (Muscle Structure and Function, Slide 38)"
+            },
+            {
+                learningObjective: "LO 7 (Muscle Structure and Function): Explain the role of stem cells in muscle regeneration, hyptertrophy, and atrophy.",
+                question: "In certain muscle diseases or prolonged disuse, non-contractile tissue accumulates within the muscle. Which progenitor cell type is responsible for the fatty infiltration and fibrosis seen in these pathological conditions?",
+                options: {
+                    A: "Satellite cells",
+                    B: "Fibro-adipogenic progenitors (FAPs)",
+                    C: "Endothelial cells",
+                    D: "Pericytes"
+                },
+                correctAnswer: "B",
+                rationale: "Fibro-adipogenic progenitors (FAPs) are interstitial cells that, in a healthy state, support muscle repair. However, in chronic disease or injury states like muscular dystrophy, they differentiate into fibroblasts (causing fibrosis) and adipocytes (causing fatty infiltration), contributing to the decline in muscle function.",
+                source: "'Interstitial fibro-adipogenic progenitors (FAPs) contribute to muscle fatty infiltration and fibrosis in skeletal muscle disease/dysfunction.' (Muscle Structure and Function, Slide 35)"
+            },
+            // Skeletal Muscle Physiology
+            {
+                learningObjective: "LO 1 (Skeletal Muscle Physiology): Describe the role of calcium in excitation-contraction coupling in skeletal muscle contraction.",
+                question: "In skeletal muscle, an action potential traveling down a T-tubule triggers the release of calcium from the sarcoplasmic reticulum (SR). This release is mediated by the mechanical coupling of which two receptors?",
+                options: {
+                    A: "Nicotinic and muscarinic receptors",
+                    B: "Dihydropyridine (DHP) and ryanodine receptors",
+                    C: "Alpha and beta-adrenergic receptors",
+                    D: "Glutamate and GABA receptors"
+                },
+                correctAnswer: "B",
+                rationale: "In skeletal muscle, the DHP receptor on the T-tubule acts as a voltage sensor. When depolarized, it undergoes a conformational change that mechanically pulls open the ryanodine receptor, which is a calcium channel on the adjacent SR membrane, causing a massive efflux of Ca2+ into the cytosol.",
+                source: "'The depolarization activates the dihydropyridine (DHP) receptor DHP receptor activation opens the Ryanodine receptor on the sarcoplasmic reticulum.' (Skeletal Muscle Physiology, Slide 9)"
+            },
+            {
+                learningObjective: "LO 1 (Skeletal Muscle Physiology): Describe the role of calcium in excitation-contraction coupling in skeletal muscle contraction.",
+                question: "A researcher develops a drug that prevents calcium from binding to troponin in skeletal muscle fibers. How would this drug affect muscle contraction?",
+                options: {
+                    A: "It would cause sustained contraction (tetanus).",
+                    B: "It would have no effect on contraction.",
+                    C: "It would prevent contraction from occurring in response to a nerve impulse.",
+                    D: "It would increase the force of contraction."
+                },
+                correctAnswer: "C",
+                rationale: "The binding of calcium to troponin is the critical 'on' switch for skeletal muscle contraction. This binding causes tropomyosin to move, uncovering the myosin-binding sites on actin. If this binding is blocked, cross-bridge formation cannot occur, and the muscle will not contract, despite nerve stimulation and calcium release from the SR.",
+                source: "'Binding of Ca2+ to troponin results in a conformational change in tropomyosin that \"uncovers\" the active sites on the actin molecule, allowing for myosin to bind.' (Skeletal Muscle Physiology, Slide 12)"
+            },
+            {
+                learningObjective: "LO 1 (Skeletal Muscle Physiology): Describe the role of calcium in excitation-contraction coupling in skeletal muscle contraction.",
+                question: "Following a muscle contraction, relaxation occurs when calcium is actively pumped back into the sarcoplasmic reticulum. This process requires energy and reduces the cytosolic calcium concentration. What is the direct consequence of this reduction in cytosolic calcium?",
+                options: {
+                    A: "Myosin heads detach from actin.",
+                    B: "Tropomyosin moves to block the myosin-binding sites on actin.",
+                    C: "ATP is hydrolyzed to ADP and Pi.",
+                    D: "Acetylcholine is released at the neuromuscular junction."
+                },
+                correctAnswer: "B",
+                rationale: "As cytosolic calcium levels fall, Ca2+ dissociates from troponin. This allows troponin to return to its original shape, which in turn causes the attached tropomyosin filament to slide back over and block the myosin-binding sites on the actin filament, thus preventing further cross-bridge cycling and leading to relaxation.",
+                source: "'Cytosolic [Ca2+] decreases; Ca2+ no longer bound to troponin; Tropomyosin recovers the myosin binding site on actin, sarcomere back to relaxed position.' (Skeletal Muscle Physiology, Slide 9)"
+            },
+            {
+                learningObjective: "LO 2 (Skeletal Muscle Physiology): Discuss the factors that influence summation of muscle force and the mechanisms for increasing strength of contraction in skeletal muscle.",
+                question: "A weightlifter is performing a bicep curl. To lift a heavier weight, he must generate more force. The central nervous system accomplishes this primarily by increasing the number of activated motor neurons, which in turn increases the number of contracting muscle fibers. What is this mechanism called?",
+                options: {
+                    A: "Frequency summation",
+                    B: "Motor unit recruitment",
+                    C: "Length-tension optimization",
+                    D: "Hypertrophy"
+                },
+                correctAnswer: "B",
+                rationale: "Motor unit recruitment is the primary mechanism for increasing muscle force for a given task. The nervous system progressively activates more motor units, starting with smaller, more fatigue-resistant units and recruiting larger, more powerful units as more force is required.",
+                source: "'Increasing the number of motor units activated increases the number of muscle fibers contracting and increases the maximal tension developed in the muscle.' (Skeletal Muscle Physiology, Slide 19)"
+            },
+            {
+                learningObjective: "LO 2 (Skeletal Muscle Physiology): Discuss the factors that influence summation of muscle force and the mechanisms for increasing strength of contraction in skeletal muscle.",
+                question: "A subject's muscle is stimulated with a series of electrical impulses. When the impulses are delivered at a high enough frequency, the individual muscle twitches fuse into a smooth, sustained contraction of maximal force. What is this state of sustained contraction called?",
+                options: {
+                    A: "A single twitch",
+                    B: "Treppe",
+                    C: "Fused tetanus",
+                    D: "Fatigue"
+                },
+                correctAnswer: "C",
+                rationale: "Frequency summation occurs when a muscle fiber is stimulated again before it has completely relaxed from the previous twitch. If the frequency is high enough, the intracellular calcium concentration remains elevated, and the individual twitches merge into a single, smooth, sustained contraction known as fused tetanus.",
+                source: "'If action potential frequency is sufficiently high, the individual contractions are not resolved and a 'fused tetanus' contraction is recorded.' (Skeletal Muscle Physiology, Slide 20)"
+            },
+            {
+                learningObjective: "LO 2 (Skeletal Muscle Physiology): Discuss the factors that influence summation of muscle force and the mechanisms for increasing strength of contraction in skeletal muscle.",
+                question: "A physical therapist is assessing a patient's muscle strength. She observes that the patient can generate the most force when the muscle is at an intermediate, or 'optimal,' length. This phenomenon is best explained by which principle?",
+                options: {
+                    A: "The size principle of recruitment",
+                    B: "The force-velocity relationship",
+                    C: "The length-tension relationship",
+                    D: "The frequency summation principle"
+                },
+                correctAnswer: "C",
+                rationale: "The length-tension relationship describes how the force a muscle can generate is dependent on its initial length. Optimal length corresponds to the ideal degree of overlap between actin and myosin filaments, allowing for the maximum number of cross-bridges to form and thus generate maximal active tension.",
+                source: "'The amount of active tension (force generated via cross bridge cycling and contractile elements) is dependent on the length of sarcomere and actin/myosin overlap.' (Skeletal Muscle Physiology, Slide 16)"
+            },
+            {
+                learningObjective: "LO 3 (Skeletal Muscle Physiology): Explain the physiological mechanisms underlying muscular fatigue, including the role of energy depletion, metabolite accumulation, and alterations in calcium handling.",
+                question: "During a high-intensity sprint, a runner experiences rapid muscle fatigue, characterized by a burning sensation and a decline in force production. The accumulation of which intracellular metabolite is a major contributor to this type of fatigue by decreasing pH and interfering with Ca2+ handling?",
+                options: {
+                    A: "Glucose",
+                    B: "Creatine phosphate",
+                    C: "Lactate and H+",
+                    D: "Acetylcholine"
+                },
+                correctAnswer: "C",
+                rationale: "During intense, anaerobic exercise, glycolysis produces ATP rapidly, but also results in the accumulation of lactate and hydrogen ions (H+). The increased H+ concentration (decreased pH) can interfere with Ca2+ binding to troponin and inhibit key glycolytic enzymes, contributing to peripheral fatigue.",
+                source: "'Increase in intracellular metabolites (H+, lactate, Pi and ROS)... Decreased pH, may interfering with SR Ca2+ release, troponin C sensitivity to Ca2+ and cross-bridge cycling...' (Skeletal Muscle Physiology, Slide 23)"
+            },
+            {
+                learningObjective: "LO 3 (Skeletal Muscle Physiology): Explain the physiological mechanisms underlying muscular fatigue, including the role of energy depletion, metabolite accumulation, and alterations in calcium handling.",
+                question: "After prolonged, submaximal exercise like a marathon, an athlete experiences fatigue. While multiple factors are involved, a significant contributor is the depletion of the primary fuel source stored within the muscle itself. What is this fuel source?",
+                options: {
+                    A: "Muscle glycogen",
+                    B: "Circulating free fatty acids",
+                    C: "Amino acids",
+                    D: "Adenosine triphosphate (ATP)"
+                },
+                correctAnswer: "A",
+                rationale: "Muscle glycogen is the main source of glucose for ATP production during prolonged exercise. Depletion of these glycogen stores is strongly correlated with the onset of fatigue, as it limits the rate of ATP synthesis needed to sustain muscle contraction.",
+                source: "'Energy/metabolism • Decreased muscle glycogen content [impacts] cellular respiration and ATP production.' (Skeletal Muscle Physiology, Slide 23)"
+            },
+            {
+                learningObjective: "LO 3 (Skeletal Muscle Physiology): Explain the physiological mechanisms underlying muscular fatigue, including the role of energy depletion, metabolite accumulation, and alterations in calcium handling.",
+                question: "A powerlifter performing a maximal effort lift experiences a sudden decrease in the neural drive from the central nervous system to the contracting muscles, causing him to fail the lift. This phenomenon, which acts as a protective mechanism, is an example of what type of fatigue?",
+                options: {
+                    A: "Peripheral fatigue",
+                    B: "Central fatigue",
+                    C: "Metabolic fatigue",
+                    D: "Excitation-contraction coupling failure"
+                },
+                correctAnswer: "B",
+                rationale: "Central fatigue originates within the central nervous system (CNS) and is characterized by a reduction in the voluntary activation of muscles. This can manifest as a decreased firing rate of motor neurons or a reduced drive from the motor cortex, effectively reducing force output even if the muscle itself is not yet exhausted.",
+                source: "'Central fatigue originates at the central nervous system (CNS), and is a decreases the neural drive to the muscle and activation of muscles.' (Skeletal Muscle Physiology, Slide 22)"
+            },
+            {
+                learningObjective: "LO 4 (Skeletal Muscle Physiology): Discuss the physiological adaptations of skeletal muscle to exercise and physical conditioning, including hypertrophy, increased oxidative capacity, and changes in fiber type composition.",
+                question: "A sedentary individual begins an endurance training program, running 3-4 times per week. After several months, a muscle biopsy would most likely reveal an increased number of which of the following structures within the muscle fibers?",
+                options: {
+                    A: "Myofibrils",
+                    B: "Sarcomeres in series",
+                    C: "Mitochondria",
+                    D: "Glycogen granules"
+                },
+                correctAnswer: "C",
+                rationale: "Endurance (aerobic) training stimulates adaptations that enhance the muscle's oxidative capacity. A primary adaptation is an increase in the number and function of mitochondria, which improves the muscle's ability to use oxygen to produce ATP, thereby increasing fatigue resistance.",
+                source: "'Endurance/aerobic training: ... Increased oxidative capacity. • Increased number of mitochondria and enhanced function of mitochondria...' (Skeletal Muscle Physiology, Slide 25)"
+            },
+            {
+                learningObjective: "LO 4 (Skeletal Muscle Physiology): Discuss the physiological adaptations of skeletal muscle to exercise and physical conditioning, including hypertrophy, increased oxidative capacity, and changes in fiber type composition.",
+                question: "A novice begins a strength training program. After 8 weeks, he notices a significant increase in the size of his biceps. This increase in muscle size is primarily due to which cellular process?",
+                options: {
+                    A: "Hyperplasia",
+                    B: "Hypertrophy",
+                    C: "Atrophy",
+                    D: "Increased mitochondrial density"
+                },
+                correctAnswer: "B",
+                rationale: "Strength training, which involves lifting heavy loads for short durations, stimulates an increase in the synthesis of contractile proteins (actin and myosin). This leads to an increase in the diameter of individual muscle fibers, a process known as hypertrophy, which results in greater overall muscle mass and strength.",
+                source: "'Strength/power training: ... Increased synthesis of contractive proteins, skeletal muscle hypertrophy and increased cross sectional area.' (Skeletal Muscle Physiology, Slide 25)"
+            },
+            {
+                learningObjective: "LO 4 (Skeletal Muscle Physiology): Discuss the physiological adaptations of skeletal muscle to exercise and physical conditioning, including hypertrophy, increased oxidative capacity, and changes in fiber type composition.",
+                question: "An elite sprinter's training regimen consists of short, high-intensity bursts of activity. This type of training would be expected to cause adaptations primarily in which type of muscle fiber, leading to increased power and speed?",
+                options: {
+                    A: "Type I (slow, oxidative) fibers",
+                    B: "Type II (fast, glycolytic) fibers",
+                    C: "Cardiac muscle fibers",
+                    D: "Smooth muscle fibers"
+                },
+                correctAnswer: "B",
+                rationale: "Strength and power training specifically targets Type II (fast-twitch) fibers. Adaptations include hypertrophy and increased levels of glycolytic enzymes, which enhance the muscle's ability to produce force rapidly and powerfully, although these fibers are less resistant to fatigue.",
+                source: "'Strength/power training: ... Maybe a shift in ratio towards increased fast (glycolytic) fibers.' (Skeletal Muscle Physiology, Slide 25)"
+            },
+            // Smooth Muscle Physiology
+            {
+                learningObjective: "LO 1 (Smooth Muscle Physiology): Describe the general structure, function, and locations of different types of smooth muscle.",
+                question: "A pathologist examines a cross-section of the small intestine wall. She identifies muscle tissue characterized by non-striated, spindle-shaped cells that are electrically coupled by gap junctions, allowing them to contract as a single unit to produce peristaltic waves. What type of smooth muscle is this?",
+                options: {
+                    A: "Multi-unit smooth muscle",
+                    B: "Single-unit (visceral) smooth muscle",
+                    C: "Striated involuntary muscle",
+                    D: "Skeletal muscle"
+                },
+                correctAnswer: "B",
+                rationale: "Single-unit, or visceral, smooth muscle is found in the walls of hollow organs like the gut, urinary bladder, and blood vessels. Its cells are connected by gap junctions, enabling coordinated, wave-like contractions that are often spontaneous.",
+                source: "'Single-Unit (Unitary/Visceral): sheets of electrically coupled cells (gap junctions) which acts in unison - often spontaneously active (e.g., gut, urinary and blood vessels).' (Smooth Muscle Physiology, Slide 6)"
+            },
+            {
+                learningObjective: "LO 1 (Smooth Muscle Physiology): Describe the general structure, function, and locations of different types of smooth muscle.",
+                question: "The iris of the eye contains smooth muscle that controls the size of the pupil. This muscle consists of discrete bundles of cells, each densely innervated, allowing for fine, graded control of contraction in response to nerve signals. What type of smooth muscle is this?",
+                options: {
+                    A: "Single-unit smooth muscle",
+                    B: "Visceral smooth muscle",
+                    C: "Multi-unit smooth muscle",
+                    D: "Cardiac muscle"
+                },
+                correctAnswer: "C",
+                rationale: "Multi-unit smooth muscle is composed of individual cells that are not electrically coupled and are each controlled by nerve inputs. This arrangement allows for precise, fine-tuned contractions, as seen in the iris, vas deferens, and piloerector muscles.",
+                source: "'Multi-Unit: tissue made of discrete bundles of cells which are densely innervated and contract only in response to its innervation (e.g., vas deferens, iris, piloerectors).' (Smooth Muscle Physiology, Slide 6)"
+            },
+            {
+                learningObjective: "LO 1 (Smooth Muscle Physiology): Describe the general structure, function, and locations of different types of smooth muscle.",
+                question: "Unlike skeletal muscle where thin filaments are anchored to Z-discs, the thin filaments in smooth muscle are anchored to cytoplasmic structures and points on the plasma membrane. What are these anchor points called?",
+                options: {
+                    A: "Sarcomeres",
+                    B: "T-tubules",
+                    C: "Dense bodies",
+                    D: "Myofibrils"
+                },
+                correctAnswer: "C",
+                rationale: "Dense bodies are the functional equivalent of Z-discs in smooth muscle. They are located in the cytoplasm and attached to the cell membrane, serving as anchoring points for actin filaments. When the filaments slide, they pull on the dense bodies, causing the cell to contract in a globular fashion.",
+                source: "'The thin filaments are anchored either to the plasma membrane or to cytoplasmic structures known as dense bodies.' (Smooth Muscle Physiology, Slide 4)"
+            },
+            {
+                learningObjective: "LO 2 (Smooth Muscle Physiology): Describe the process of excitation-contraction coupling in smooth muscle, the role of calcium in this process and how these contrast to skeletal muscle (including the role of calmodulin, myosin kinase and myosin phosphatase in smooth muscle contraction).",
+                question: "In smooth muscle, an increase in cytosolic Ca2+ initiates contraction. Unlike in skeletal muscle where Ca2+ binds to troponin, in smooth muscle Ca2+ first binds to which intracellular protein?",
+                options: {
+                    A: "Actin",
+                    B: "Myosin",
+                    C: "Tropomyosin",
+                    D: "Calmodulin"
+                },
+                correctAnswer: "D",
+                rationale: "Smooth muscle does not have troponin. Instead, the initiation of contraction depends on Ca2+ binding to calmodulin. The Ca2+-calmodulin complex then activates another enzyme to start the cross-bridge cycle.",
+                source: "'Ca2+ binds to calmodulin (a calcium dependent enzyme) and activates Myosin Light Chain Kinase (MLCK).' (Smooth Muscle Physiology, Slide 11)"
+            },
+            {
+                learningObjective: "LO 2 (Smooth Muscle Physiology): Describe the process of excitation-contraction coupling in smooth muscle, the role of calcium in this process and how these contrast to skeletal muscle (including the role of calmodulin, myosin kinase and myosin phosphatase in smooth muscle contraction).",
+                question: "Once the Ca2+-calmodulin complex is formed in a smooth muscle cell, it activates an enzyme that phosphorylates the myosin light chains, enabling the myosin head to bind to actin. What is this crucial enzyme?",
+                options: {
+                    A: "Myosin Light Chain Phosphatase (MLCP)",
+                    B: "Myosin Light Chain Kinase (MLCK)",
+                    C: "Protein Kinase A",
+                    D: "Troponin C"
+                },
+                correctAnswer: "B",
+                rationale: "The activation of MLCK by the Ca2+-calmodulin complex is the key regulatory step in smooth muscle contraction. MLCK uses ATP to phosphorylate the myosin light chain, which 'activates' the myosin head, allowing it to interact with actin and generate force.",
+                source: "'Activated MLCK phosphorylates the MLC in myosin head (requires 1 ATP molecule). Phosphorylated myosin can bind to actin and power stroke occurs.' (Smooth Muscle Physiology, Slide 11)"
+            },
+            {
+                learningObjective: "LO 2 (Smooth Muscle Physiology): Describe the process of excitation-contraction coupling in smooth muscle, the role of calcium in this process and how these contrast to skeletal muscle (including the role of calmodulin, myosin kinase and myosin phosphatase in smooth muscle contraction).",
+                question: "For a smooth muscle cell to relax, the myosin head must be dephosphorylated, causing it to detach from actin. This action is carried out by which enzyme?",
+                options: {
+                    A: "Myosin Light Chain Kinase (MLCK)",
+                    B: "Myosin Light Chain Phosphatase (MLCP)",
+                    C: "Calmodulin",
+                    D: "Ca2+-ATPase"
+                },
+                correctAnswer: "B",
+                rationale: "Relaxation in smooth muscle requires the removal of the phosphate group from the myosin light chain. This is accomplished by the enzyme Myosin Light Chain Phosphatase (MLCP), which is constitutively active and opposes the action of MLCK.",
+                source: "'For relaxation, myosin must be dephosphorylated by the enzyme Myosin Light-Chain Phosphatase (MLCP) and the cytosolic Ca2+ concentration must decrease.' (Smooth Muscle Physiology, Slide 11)"
+            },
+            {
+                learningObjective: "LO 3 (Smooth Muscle Physiology): Describe the general mechanisms of regulation of different types of smooth muscle (nervous, hormonal and chemical).",
+                question: "The contraction of bronchiolar smooth muscle is modulated by the autonomic nervous system. The release of epinephrine acts on β-2 adrenergic receptors, leading to relaxation and bronchodilation. This is an example of which type of regulation?",
+                options: {
+                    A: "Nervous regulation",
+                    B: "Hormonal regulation",
+                    C: "Local chemical regulation",
+                    D: "Mechanical regulation"
+                },
+                correctAnswer: "B",
+                rationale: "Epinephrine, released from the adrenal medulla, circulates in the blood and acts as a hormone. Its effect on distant smooth muscle cells, such as those in the airways, is a classic example of hormonal regulation.",
+                source: "'Hormones (epinephrine, cholecystokinin, angiotensin II).' (Smooth Muscle Physiology, Slide 14)"
+            },
+            {
+                learningObjective: "LO 3 (Smooth Muscle Physiology): Describe the general mechanisms of regulation of different types of smooth muscle (nervous, hormonal and chemical).",
+                question: "During exercise, the smooth muscle in arterioles within the exercising skeletal muscle relaxes, causing vasodilation. This is primarily caused by changes in the local environment, such as decreased oxygen, increased carbon dioxide, and increased H+. This is an example of which type of regulation?",
+                options: {
+                    A: "Nervous regulation",
+                    B: "Hormonal regulation",
+                    C: "Local paracrine regulation",
+                    D: "Stretch-induced regulation"
+                },
+                correctAnswer: "C",
+                rationale: "Local paracrine (or chemical) factors are substances released by nearby cells that act on adjacent smooth muscle cells. In active tissues, metabolic byproducts like CO2, H+, and adenosine cause vasodilation to increase blood flow and match metabolic demand.",
+                source: "'Local paracrine factors (histamine, H+, oxygen, carbon dioxide, ion concentrations, nitric oxide) - mechanism for altering smooth muscle contraction in response to changes in the muscle's immediate internal environment.' (Smooth Muscle Physiology, Slide 14)"
+            },
+            {
+                learningObjective: "LO 3 (Smooth Muscle Physiology): Describe the general mechanisms of regulation of different types of smooth muscle (nervous, hormonal and chemical).",
+                question: "The smooth muscle in the wall of the urinary bladder contracts when it becomes filled with urine. This contraction is initiated by the physical distension of the bladder wall. This is an example of which type of activation mechanism?",
+                options: {
+                    A: "Neurotransmitter-mediated",
+                    B: "Spontaneous electrical activity",
+                    C: "Hormonal",
+                    D: "Stretch-induced"
+                },
+                correctAnswer: "D",
+                rationale: "Some smooth muscles, particularly in visceral organs, respond to mechanical stretch by contracting. The stretch opens mechanically gated ion channels in the muscle membrane, leading to depolarization and triggering a contraction.",
+                source: "'Stretch - opens mechanically gated ion channels, leading to membrane depolarization.' (Smooth Muscle Physiology, Slide 8)"
+            },
+            {
+                learningObjective: "LO 4 (Smooth Muscle Physiology): Explain the mechanisms of regulation of vascular smooth muscle by physiologic dilator and constrictor pathways.",
+                question: "A patient is administered a drug that increases the production of nitric oxide (NO) in vascular endothelial cells. NO diffuses to the adjacent smooth muscle cells and causes relaxation. NO achieves this effect by increasing the intracellular concentration of which second messenger?",
+                options: {
+                    A: "cAMP",
+                    B: "cGMP",
+                    C: "Inositol trisphosphate (IP3)",
+                    D: "Calcium (Ca2+)"
+                },
+                correctAnswer: "B",
+                rationale: "Nitric oxide is a potent vasodilator. It activates the enzyme guanylyl cyclase in smooth muscle cells, which leads to the production of cyclic GMP (cGMP). Increased cGMP levels then activate pathways that promote relaxation, such as activating myosin light chain phosphatase and decreasing intracellular calcium.",
+                source: "The diagram shows 'NO' leading to an increase in 'cGMP', which promotes 'Relaxation'. (Smooth Muscle Physiology, Slide 16)"
+            },
+            {
+                learningObjective: "LO 4 (Smooth Muscle Physiology): Explain the mechanisms of regulation of vascular smooth muscle by physiologic dilator and constrictor pathways.",
+                question: "Angiotensin II is a powerful vasoconstrictor that acts on vascular smooth muscle. It binds to a G-protein coupled receptor (GPCRq) that activates the phospholipase C pathway, leading to the production of IP3. What is the primary effect of IP3 in the smooth muscle cell?",
+                options: {
+                    A: "It opens Ca2+ channels on the sarcoplasmic reticulum.",
+                    B: "It activates myosin light chain kinase directly.",
+                    C: "It inhibits myosin light chain phosphatase.",
+                    D: "It opens K+ channels in the cell membrane."
+                },
+                correctAnswer: "A",
+                rationale: "Inositol trisphosphate (IP3) is a second messenger that binds to IP3 receptors on the sarcoplasmic reticulum membrane. These receptors are ligand-gated Ca2+ channels, and their opening causes the release of stored calcium into the cytosol, leading to contraction.",
+                source: "The diagram shows the 'Gq-R' receptor activating 'IP3', which then leads to an increase in 'Ca++' release from the 'SR'. (Smooth Muscle Physiology, Slide 16)"
+            },
+            {
+                learningObjective: "LO 4 (Smooth Muscle Physiology): Explain the mechanisms of regulation of vascular smooth muscle by physiologic dilator and constrictor pathways.",
+                question: "A generalized response to the start of exercise is an increase in sympathetic nervous system activity, which would normally cause vasoconstriction via norepinephrine release. However, in the exercising muscles, this effect is overridden, and vasodilation occurs instead. This local vasodilation is primarily caused by which factor?",
+                options: {
+                    A: "A decrease in sympathetic nerve activity",
+                    B: "The release of circulating hormones",
+                    C: "An increase in local metabolic factors",
+                    D: "A decrease in blood pressure"
+                },
+                correctAnswer: "C",
+                rationale: "During exercise, active skeletal muscles produce metabolites such as CO2, H+, and adenosine, and consume O2. These local chemical changes are powerful vasodilators that override the constrictor effects of the sympathetic nervous system, a phenomenon known as functional sympatholysis or active hyperemia. This ensures that blood flow is matched to the metabolic needs of the tissue.",
+                source: "'In exercising muscles, the increased sympathetic vasoconstrictor nerve activity is counteracted by the increase in local metabolic factors which promote vasodilation.' (Smooth Muscle Physiology, Slide 17)"
+            }
+        ];
+
+
+        const quizContainer = document.getElementById('quiz-container');
+        const themeToggleButton = document.getElementById('theme-toggle-button');
+        const bodyElement = document.body;
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                bodyElement.classList.add('light-theme');
+                themeToggleButton.textContent = 'Switch to Dark Mode';
+            } else {
+                bodyElement.classList.remove('light-theme');
+                themeToggleButton.textContent = 'Switch to Light Mode';
+            }
+            localStorage.setItem('quizTheme', theme);
+        }
+
+        function loadQuiz() {
+            quizData.forEach((qData, index) => {
+                const questionBlock = document.createElement('div');
+                questionBlock.classList.add('question-block');
+                questionBlock.id = `q${index}`;
+
+                const loText = document.createElement('div');
+                loText.classList.add('learning-objective');
+                loText.textContent = qData.learningObjective;
+                questionBlock.appendChild(loText);
+
+                const questionText = document.createElement('p');
+                questionText.classList.add('question-text');
+                questionText.innerHTML = `${index + 1}. ${qData.question}`;
+                questionBlock.appendChild(questionText);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.classList.add('options');
+                for (const optionKey in qData.options) {
+                    const optionId = `q${index}_${optionKey}`;
+                    const label = document.createElement('label');
+                    label.htmlFor = optionId;
+
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.name = `q${index}`;
+                    radioInput.value = optionKey;
+                    radioInput.id = optionId;
+
+                    const labelText = document.createElement('span');
+                    labelText.textContent = ` ${optionKey}. ${qData.options[optionKey]}`;
+
+                    label.appendChild(radioInput);
+                    label.appendChild(labelText);
+                    optionsDiv.appendChild(label);
+                }
+                questionBlock.appendChild(optionsDiv);
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.classList.add('button-container');
+
+                const checkButton = document.createElement('button');
+                checkButton.textContent = 'Check Answer';
+                checkButton.classList.add('check-button');
+                checkButton.onclick = () => checkAnswer(index);
+                buttonContainer.appendChild(checkButton);
+                questionBlock.appendChild(buttonContainer);
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.classList.add('feedback');
+                questionBlock.appendChild(feedbackDiv);
+
+                quizContainer.appendChild(questionBlock);
+            });
+        }
+
+        function checkAnswer(questionIndex) {
+            const questionBlockElement = document.getElementById(`q${questionIndex}`);
+            const selectedRadioButton = questionBlockElement.querySelector('input[type="radio"]:checked');
+
+            if (!selectedRadioButton) {
+                alert("Please select an answer first.");
+                return;
+            }
+
+            const selectedOptionKey = selectedRadioButton.value;
+            const qData = quizData[questionIndex];
+            const feedbackDiv = questionBlockElement.querySelector('.feedback');
+            const correct = selectedOptionKey === qData.correctAnswer;
+
+            let feedbackHTML = '';
+            if (correct) {
+                feedbackHTML = `<span class="feedback-status">Correct!</span>`;
+                feedbackDiv.className = 'feedback correct';
+            } else {
+                feedbackHTML = `<span class="feedback-status">Incorrect. The correct answer is ${qData.correctAnswer}.</span>`;
+                feedbackDiv.className = 'feedback incorrect';
+            }
+
+            feedbackHTML += `<div class="feedback-rationale"><strong>Rationale:</strong> ${qData.rationale}</div>`;
+            feedbackHTML += `<div class="feedback-source"><strong>Source:</strong> ${qData.source}</div>`;
+            feedbackDiv.innerHTML = feedbackHTML;
+        }
+
+        themeToggleButton.addEventListener('click', () => {
+            if (bodyElement.classList.contains('light-theme')) {
+                applyTheme('dark');
+            } else {
+                applyTheme('light');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('quizTheme') || 'dark';
+            applyTheme(savedTheme);
+            loadQuiz();
+        });
+    </script>
+</body>
+</html>
